@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AppInstaller Uri="https://example.com/YourPackage.zip" Version="1.0.0.0">
+  <Installer>
+    <InstallCommand>
+      powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "& {
+        # Отримати шлях до папки користувача
+        $userDirectory = $env:USERPROFILE
+
+        # Задати шлях до папки modules
+        $modulesDirectory = Join-Path $userDirectory "modules"
+
+        # Переконатися, що папка modules існує, або створити її
+        if (-not (Test-Path $modulesDirectory -PathType Container)) {
+          New-Item -Path $modulesDirectory -ItemType Directory
+        }
+
+        # Завантажити ZIP-файл
+        Invoke-WebRequest -Uri 'https://github.com/qops-hub/qops/archive/refs/heads/main.zip' -OutFile 'C:\Path\To\YourPackage.zip'
+
+        # Розархівувати ZIP-файл у поточну папку
+        Expand-Archive -Path 'C:\Path\To\YourPackage.zip' -Force
+
+        # Вивести шлях до папки modules
+        Write-Output "Files are loaded into: $modulesDirectory"
+      }"
+    </InstallCommand>
+  </Installer>
+</AppInstaller>
